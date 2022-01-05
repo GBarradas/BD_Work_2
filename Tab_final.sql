@@ -1,7 +1,19 @@
-# Resolução da Pergunta 9
-## [Pagina Principal](Resolução.md)
-> **9.**  Indique as express ̃oes em SQL para inserir a seguinte informação na suabase de dados e inseria-a.  
-``` SQL
+DROP TABLE IF EXISTS animais CASCADE;
+
+CREATE TABLE animais (
+
+  registo DECIMAL PRIMARY KEY,
+
+  nome VARCHAR(50),
+
+  sexo VARCHAR(10),
+
+  nascimento VARCHAR(10),
+
+  local VARCHAR(3)
+
+);
+
 --Inserção dos animais::
 --Tigres::
 
@@ -36,6 +48,26 @@ INSERT INTO animais VALUES (323555, 'Rara', 'masculino', 'cativeiro', 'A6');
 INSERT INTO animais VALUES (423555, 'Zula', 'feminino', 'cativeiro', 'A6');
 INSERT INTO animais VALUES (523555, 'Zura', 'feminino', 'cativeiro', 'A6');
 
+DROP TABLE IF EXISTS classe_bio CASCADE;
+
+CREATE TABLE classe_bio(
+
+  especie VARCHAR(50),
+
+  classe VARCHAR(50),
+
+  ordem VARCHAR(50),
+
+  familia VARCHAR(50),
+
+  registo DECIMAL,
+
+  PRIMARY KEY (especie, registo),
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT 
+
+);
+
 --Inserção das classes biologicas::
 
 INSERT INTO classe_bio VALUES ('tigre', 'mamíferos', 'carnívoros', 'felinos', 123456);
@@ -59,6 +91,23 @@ INSERT INTO classe_bio VALUES ('arara-azul-pequena', 'aves', 'psittaciformes', '
 INSERT INTO classe_bio VALUES ('arara-azul-pequena', 'aves', 'psittaciformes', 'psittacidae', 323555);
 INSERT INTO classe_bio VALUES ('arara-azul-pequena', 'aves', 'psittaciformes', 'psittacidae', 423555);
 INSERT INTO classe_bio VALUES ('arara-azul-pequena', 'aves', 'psittaciformes', 'psittacidae', 523555);
+  
+
+DROP TABLE IF EXISTS captura CASCADE;
+
+CREATE TABLE captura(
+
+  registo DECIMAL,
+
+  local_captura VARCHAR(100),
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT,
+
+  data_captura DATE,
+
+  idd_estimada DATE
+
+);
 
 --Inserção de capturas::
 --Tigres
@@ -84,6 +133,26 @@ INSERT INTO captura VALUES (123555, 'América do Sul em Paraná', '2018/1/1', '2
 INSERT INTO captura VALUES (133555, 'América do Sul em Paraná', '2018/1/1', '2017/9/1');
 INSERT INTO captura VALUES (223555, 'América do Sul em Uruguai', '2019/1/1', '2018/11/1');  
 
+DROP TABLE IF EXISTS cativeiro CASCADE;
+
+CREATE TABLE cativeiro(
+
+  registo DECIMAL PRIMARY KEY,
+
+  registo_mae DECIMAL,
+
+  registo_pai DECIMAL,
+
+  data_nascimento DATE,
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_mae)REFERENCES animais ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_pai)REFERENCES animais ON DELETE RESTRICT 
+
+);
+
 --Inserção dos nascios em cativeiro::
 --Tigre::
 
@@ -107,6 +176,22 @@ INSERT INTO cativeiro VALUES (323555, 223555, 123555, '2009/5/7');
 INSERT INTO cativeiro VALUES (423555, 223555, 123555, '2009/5/7');
 INSERT INTO cativeiro VALUES (523555, 223555, 123555, '2009/5/7');  
 
+DROP TABLE IF EXISTS espacos CASCADE;
+
+CREATE TABLE espacos(
+
+  registo_local VARCHAR(5) PRIMARY KEY,
+
+  area DECIMAL,
+
+  meio VARCHAR(50),
+
+  clima VARCHAR(50)
+
+  --FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
+
+);
+
 --Inserção dos espaços do zoo::
 
 INSERT INTO espacos VALUES ('A3', 1200, 'terrestre', 'quente e húmido');
@@ -115,6 +200,18 @@ INSERT INTO espacos VALUES ('A5', 1200, 'terrestre', 'quente e húmido');
 INSERT INTO espacos VALUES ('A1', 2000, 'misto', 'quente e seco');
 INSERT INTO espacos VALUES ('A2', 1500, 'terrestre', 'frio e seco');
 INSERT INTO espacos VALUES ('A6', 500, 'terrestre', 'quente e húmido');
+
+DROP TABLE IF EXISTS funcionario CASCADE;
+
+CREATE TABLE funcionario (
+
+  nome_func VARCHAR(50),
+
+  inicio_func DATE,
+
+  nif DECIMAL PRIMARY KEY
+
+);
 
 --Inserção dos Funcionarios::
 --Tratadores
@@ -138,6 +235,20 @@ INSERT INTO funcionario VALUES('Manuela Torres', '2004/4/1', 123123130);
 
 INSERT INTO funcionario VALUES('Pedro Vale', '2004/5/1', 123123131);
 INSERT INTO funcionario VALUES('Isabel Soares', '2004/5/1', 123123132);
+
+DROP TABLE IF EXISTS telefones CASCADE;
+
+CREATE TABLE telefones (
+
+  numero DECIMAL,
+
+  nif DECIMAL,
+
+  PRIMARY KEY (numero,nif),
+
+  FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT
+
+);
 
 --Inserção dos numeros de telefone::
 --Tratadores::
@@ -172,6 +283,20 @@ INSERT INTO telefones VALUES(919999986, 123123131);
 INSERT INTO telefones VALUES(266787826, 123123132);
 INSERT INTO telefones VALUES(919999976, 123123132);
 
+DROP TABLE IF EXISTS responsavel CASCADE;
+
+CREATE TABLE responsavel(
+
+	nif_responsavel DECIMAL,
+
+  	nif_funcionario DECIMAL PRIMARY KEY,
+
+  	FOREIGN KEY (nif_responsavel) REFERENCES funcionario ON DELETE RESTRICT,
+
+  	FOREIGN KEY (nif_funcionario) REFERENCES funcionario ON DELETE RESTRICT
+
+);
+
 --Inserção dos responsáveis::
 
 INSERT INTO responsavel VALUES(123123125,123123123);
@@ -184,6 +309,30 @@ INSERT INTO responsavel VALUES(123123130,123123129);
 INSERT INTO responsavel VALUES(123123129,123123130);
 INSERT INTO responsavel VALUES(123123129,123123131);
 INSERT INTO responsavel VALUES(123123131,123123132);
+
+DROP TABLE IF EXISTS administrativos CASCADE;
+CREATE TABLE administrativos(
+  nif DECIMAL PRIMARY KEY,
+  FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT
+);
+
+--Inserção dos admistrativos::
+INSERT INTO administrativos VALUES(123123129);
+INSERT INTO administrativos VALUES(123123130);
+
+DROP TABLE IF EXISTS tratador CASCADE;
+
+CREATE TABLE tratador (
+
+  nif DECIMAL,
+
+  registo DECIMAL,
+
+  FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
+
+);
 
 --Inserção dos Tratadores::
 
@@ -209,6 +358,20 @@ INSERT INTO tratador VALUES(123123125,323555);
 INSERT INTO tratador VALUES(123123125,523555);
 INSERT INTO tratador VALUES(123123125,523555);
 
+DROP TABLE IF EXISTS tratador_auxiliar CASCADE;
+
+CREATE TABLE tratador_auxiliar (
+
+  nif DECIMAL,
+
+  registo_local VARCHAR(5),
+
+  FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_local) REFERENCES espacos ON DELETE RESTRICT
+
+);
+
 --Inserção dos Tratadores Auxiliares::
 
 INSERT INTO tratador_auxiliar VALUES(123123126,'A3');
@@ -218,10 +381,42 @@ INSERT INTO tratador_auxiliar VALUES(123123127,'A1');
 INSERT INTO tratador_auxiliar VALUES(123123128,'A2');
 INSERT INTO tratador_auxiliar VALUES(123123128,'A6');
 
+DROP TABLE IF EXISTS veterinarios CASCADE;
+
+CREATE TABLE veterinarios(
+
+  nif DECIMAL PRIMARY KEY,
+
+  FOREIGN KEY(nif) REFERENCES funcionario ON DELETE RESTRICT
+
+);
+
 --Inserção dos vet::
 
 INSERT INTO veterinarios VALUES(123123131);
 INSERT INTO veterinarios VALUES(123123132); 
+
+DROP TABLE IF EXISTS consultas CASCADE;
+
+CREATE TABLE consultas (
+
+  nif DECIMAL,
+
+  registo DECIMAL,
+
+  registo_local VARCHAR(5),
+
+  FOREIGN KEY (nif) REFERENCES veterinarios ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_local) REFERENCES espacos ON DELETE RESTRICT,
+
+  data_consulta DATE,
+
+  diagnostico VARCHAR(1000)
+
+);
 
 --Inserção das consultas::
 
@@ -248,5 +443,3 @@ INSERT INTO consultas VALUES(123123132, 223444, 'A1', '2007/7/12', 'cálcio inje
 INSERT INTO consultas VALUES(123123132, 223444, 'A1', '2007/9/12', 'parto');
 INSERT INTO consultas VALUES(123123132, 423555, 'A5', '2009/6/12', 'infecção');
 INSERT INTO consultas VALUES(123123132, 423555, 'A5', '2009/6/12', 'antibiótico injectado');
-
-```

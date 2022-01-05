@@ -1,119 +1,189 @@
-# Resolução da Pergunta 8
-## [Pagina Principal](Resolução.md)
-> **8.**  Indique os comandos SQL para a criação das tabelas que constituem esta base de dados.  E construa esta base de dados no Postgres.  
-  
-- **animais**(nome, sexo, registo, local)
+- **animais**(*registo*, nome, sexo, local)
 ``` SQL
-DROP TABLE IF EXISTS animais CASCADE;
-CREATE TABLE animais(
-  nome VARCHAR(100),
-  sexo CHAR(10),
+CREATE TABLE animais (
+
   registo DECIMAL PRIMARY KEY,
-  local CHAR(5)
+
+  nome VARCHAR(50),
+
+  sexo VARCHAR(10),
+
+  nascimento VARCHAR(10),
+
+  local VARCHAR(3)
+
 );
-```  
-- **class_biologica**(clase, ordem, familia, especie, registo)
+```
+- **classe_bio**(*especie*, classe, ordem, familia, registo)
 ``` SQL
-DROP TABLE IF EXISTS class_biologica CASCADE;
-CREATE TABLE class_biologica(
-  classe VARCHAR(100),
-  ordem VARCHAR(100),
-  familia VARCHAR(100),
-  especie VARCHAR(100),
-  registo DECIMAL PRIMARY KEY,
-  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
-);
-```  
-- **progenitores**(registo_pai, registo_mae, registo, data_nascimento)
-``` SQL
-DROP TABLE IF EXISTS progenitores CASCADE;
-CREATE TABLE progenitores(
-  registo_pai DECIMAL,
-  registo_mae DECIMAL,
-  registo DECIMAL PRIMARY KEY,
-  data_nascimento DATE,
-  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT,
-  FOREIGN KEY (registo_pai) REFERENCES animais ON DELETE RESTRICT,
-  FOREIGN KEY (registo_mae) REFERENCES animais ON DELETE RESTRICT
-);
-```  
-- **captura**(local_captura, data_captura, idade_estimada, registo)
-``` SQL
-DROP TABLE IF EXISTS captura CASCADE;
-CREATE TABLE captura(
-  local_captura VARCHAR(100),
-  data_captura DATE,
-  idade_esimada DATE,
-  registo DECIMAL PRIMARY KEY,
-  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
-);
-``` 
-- **espaços**(registo_local, area_do_local,meio, temperatura, humadise) 
-``` SQL
-DROP TABLE IF EXISTS espaços CASCADE;
-CREATE TABLE espaços(
-  registo_local VARCHAR(5) PRIMARY KEY,
-  area_do_local DECIMAL,
-  meio VARCHAR(50),
-  temperatura VARCHAR(8),
-  humidade VARCHAR(8)
-);
-``` 
-- **funcionarios**(nome_funcionario, inicio_funçoes, telefone, telemovel, função, nif)
-``` SQL
-DROP TABLE IF EXISTS funcionarios CASCADE;
-CREATE TABLE funcionarios(
-  nome_funcionario VARCHAR(100),
-  inicio_funçoes CHAR(8),
-  telefone CHAR(9),
-  telemovel CHAR(9),
-  funçao VARCHAR(20),
-  nif DECIMAL PRIMARY KEY 
-);
-```  
-- **responsavel**(nif_responsavel, nif)
-``` SQL
-DROP TABLE IF EXISTS responsavel CASCADE;
-CREATE TABLE responsavel(
-  nif_responsavel DECIMAL,
-  nif DECIMAL,
-  PRIMARY KEY (nif_responsavel, nif),
-  FOREIGN KEY (nif_responsavel) REFERENCES funcionarios ON DELETE RESTRICT,
-  FOREIGN KEY (nif) REFERENCES funcionarios ON DELETE RESTRICT
-);
-```  
-- **tratadores**(nif_tratador,registo)
-``` SQL
-DROP TABLE IF EXISTS tratadores CASCADE;
-CREATE TABLE tratadores(
-  nif_tratador DECIMAL,
-  registo DECIMAL PRIMARY KEY,
-  FOREIGN KEY (nif_tratador) REFERENCES funcionarios ON DELETE RESTRICT,
-  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
-);
-```  
-- **tratadores_auxiliares**(nif_auxiliar,registo_local)
-``` SQL
-DROP TABLE IF EXISTS tratadores_auxiliares CASCADE;
-CREATE TABLE tratadores_auxiliares(
-  nif_auxiliar DECIMAL,
-  registo_local VARCHAR(5),
-  PRIMARY KEY(nif_auxiliar, registo_local),
-  FOREIGN KEY (nif_auxiliar) REFERENCES funcionarios ON DELETE RESTRICT,
-  FOREIGN KEY (registo_local) REFERENCES espaços ON DELETE RESTRICT
-);
-```  
-- **consultas**(nif_vet, registo, data_consulta, diagnostico, local)
-``` SQL
-DROP TABLE IF EXISTS consultas CASCADE;
-CREATE TABLE consultas(
-  nif_vet DECIMAL,
+CREATE TABLE classe_bio(
+
+  especie VARCHAR(50),
+
+  classe VARCHAR(50),
+
+  ordem VARCHAR(50),
+
+  familia VARCHAR(50),
+
   registo DECIMAL,
-  data_hora DATE,
-  diagnostico VARCHAR(100),
-  local VARCHAR(5),
-  FOREIGN KEY (nif_vet) REFERENCES funcionarios ON DELETE RESTRICT,
+
+  PRIMARY KEY (especie, registo),
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT 
+
+);
+```
+- **captura**(*registo*, local_captura, data_captura, idade_estimada)
+``` SQL
+CREATE TABLE captura(
+
+  registo DECIMAL,
+
+  local_captura VARCHAR(100),
+
   FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT,
-  FOREIGN KEY (local) REFERENCES espaços ON DELETE RESTRICT
+
+  data_captura DATE,
+
+  idd_estimada DATE
+
+);
+
+```
+- **cativeiro**(*registo*, registo_mae, registo_pai)
+``` SQL
+CREATE TABLE cativeiro(
+
+  registo DECIMAL PRIMARY KEY,
+
+  registo_mae DECIMAL,
+
+  registo_pai DECIMAL,
+
+  data_nascimento DATE,
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_mae)REFERENCES animais ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_pai)REFERENCES animais ON DELETE RESTRICT 
+
+);
+```
+- **espacos**(*registo_local*, area, meio, clima)
+``` SQL
+CREATE TABLE espacos(
+
+  registo_local VARCHAR(5) PRIMARY KEY,
+
+  area DECIMAL,
+
+  meio VARCHAR(50),
+
+  clima VARCHAR(50)
+
+  --FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
+
+);
+```
+- **funcionario**(nome_func, inicio_func, *nif*)
+``` SQL
+CREATE TABLE funcionario (
+
+  nome_func VARCHAR(50),
+
+  inicio_func DATE,
+
+  nif DECIMAL PRIMARY KEY
+
+);
+```
+- **telf_funcionario**(*nif, telemovel*)
+``` SQL
+CREATE TABLE telefones (
+
+  numero DECIMAL,
+
+  nif DECIMAL,
+
+  PRIMARY KEY (numero,nif),
+
+  FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT
+
+);
+```
+- **responsavel**(nif_responsvel, *nif_funcionario*)
+``` SQL
+CREATE TABLE responsavel(
+
+	nif_responsavel DECIMAL,
+
+  	nif_funcionario DECIMAL PRIMARY KEY,
+
+  	FOREIGN KEY (nif_responsavel) REFERENCES funcionario ON DELETE RESTRICT,
+
+  	FOREIGN KEY (nif_funcionario) REFERENCES funcionario ON DELETE RESTRICT
+
+);
+```
+- **tratador**(nif, animal)
+``` SQL
+CREATE TABLE tratador (
+
+  nif DECIMAL,
+
+  registo DECIMAL,
+
+  FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
+
+);
+```
+- **tratador_auxiliar**(nif, registo_local)
+``` SQL
+CREATE TABLE tratador_auxiliar (
+
+  nif DECIMAL,
+
+  registo_local VARCHAR(5),
+
+  FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_local) REFERENCES espacos ON DELETE RESTRICT
+
+);
+```
+- **veterinarios**(*nif*)
+``` SQL
+CREATE TABLE veterinarios(
+
+  nif DECIMAL PRIMARY KEY,
+
+  FOREIGN KEY(nif) REFERENCES funcionario ON DELETE RESTRICT
+
+);
+```
+- **consultas**(nif, registo, registo_local, data_consulta, diagonostico)
+``` SQL
+CREATE TABLE consultas (
+
+  nif DECIMAL,
+
+  registo DECIMAL,
+
+  registo_local VARCHAR(5),
+
+  FOREIGN KEY (nif) REFERENCES veterinarios ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT,
+
+  FOREIGN KEY (registo_local) REFERENCES espacos ON DELETE RESTRICT,
+
+  data_consulta DATE,
+
+  diagnostico VARCHAR(1000)
+
 );
 ```

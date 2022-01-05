@@ -6,42 +6,40 @@
 >
 >**a.**  Em que locais do zoo se podem visitar aves? 
 ``` SQL
-SELECT DISTINCT "espaços".registo_local FROM "espaços" 
-JOIN animais 
-ON animais.local="espaços".registo_local 
-NATURAL INNER JOIN class_biologica
-WHERE classe LIKE 'aves';
+SELECT DISTINCT local from animais
+natural INNER JOIN classe_bio
+WHERE classe LIKE 'aves'
 ```  
 |registo_local|
 |-------------|
-|A5|  
+|A6|  
 
 >**b.**  Em que locais do zoo não há carnívoros?  
 ``` SQL
-SELECT DISTINCT "espaços".registo_local FROM "espaços"
-JOIN animais 
-ON animais.local="espaços".registo_local 
-NATURAL INNER JOIN class_biologica
-WHERE ordem NOT LIKE 'carnívoros';
+SELECT DISTINCT local from animais
+natural INNER JOIN classe_bio
+WHERE ordem not like 'carnívoros'
 ```  
 |registo_local|
 |-------------|
+|A6|
 |A2|
-|A5|
 |A1|
 >**c.**  Indique os irmãos da Kilu.  
 ``` SQL
-SELECT nome FROM animais 
-NATURAL INNER JOIN progenitores
-WHERE progenitores.registo_mae=(SELECT registo_mae FROM progenitores 
-NATURAL INNER JOIN animais
-WHERE nome LIKE 'Kilu') OR
-progenitores.registo_pai=
-(SELECT registo_pai FROM progenitores
-NATURAL INNER JOIN animais
-WHERE NOME LIKE 'Kilu')
+SELECT nome from animais
+natural INNER JOIN cativeiro
+WHERE registo_pai = (
+  SELECT registo_pai FROM cativeiro
+  NATURAL INNER JOIN animais
+  WHERE animais.nome = 'Kilu')
+  or
+  registo_mae = (SELECT registo_mae FROM cativeiro
+  NATURAL INNER JOIN animais
+  WHERE animais.nome = 'Kilu')
 EXCEPT
-SELECT nome FROM animais WHERE nome LIKE 'Kilu';
+SELECT nome FROM animais
+WHERE nome = 'Kilu'
 ```  
 |nome|
 |----|
@@ -56,22 +54,25 @@ JOIN animais
 ON animais.registo=tratadores.registo
 WHERE animais.nome LIKE 'Kata';
 ```  
-|telemovel|telefone |
-|---------|---------|
-|919999999|266787809|  
+|numero   |
+|---------|
+|266787809|  
+|919999999|
 
 >**e.**  Indique  os  telefones  do  responsável  pelo  auxiliar  responsável  pela local onde está a Kata.  
 ``` SQL
-SELECT telemovel,telefone FROM funcionarios 
-JOIN  tratadores_auxiliares
-on funcionarios.nif=tratadores_auxiliares.nif_auxiliar
-WHERE registo_local LIKE 
-(SELECT LOCAL FROM animais WHERE nome like 'Kata');
+WITH aux as (select nif from tratador_auxiliar
+NATURAL INNER JOIN animais
+where tratador_auxiliar.registo_local = animais.local and nome = 'Kata')
+select numero from telefones
+natural inner JOIN aux
+Natural INNER JOIN responsavel
+where responsavel.nif_funcionario = aux.nif
 ```  
-|telemovel|telefone |
-|---------|---------|
-|919999996|266878806|
-|919999994|266787806|
+|numero   |
+|---------|
+|919999996|
+|266878806|
 >**f.**  Indique os tratamentos (data e tratamento) que a Mali já fez no zoo.  
 ``` SQL
 SELECT data_consulta,diagnostico FROM consultas
@@ -80,31 +81,28 @@ NATURAL INNER JOIN animais
 ```  
 |data_consulta|diagnostico|
 |-------------|-----------|
-|2005-08-12|grávida|
+|2005-08-12   |grávida    |
 |2005-09-12|cálcio injectado|
-|2005-12-12|parto|
-|2006-07-12|infecção|
-|2006-07-12|antibiótico injectado
+|2005-12-12   |parto      |
+|2006-07-12   |infecção   |
+|2006-07-12   |antibiótico injectado|
 >**g.**  Indique os nomes dos veterinários que já diagnosticaram uma gravidez a um carnívoro.  
 ``` SQL
-with carnivoros as (SELECT registo FROM animais
-NATURAL INNER JOIN class_biologica
-WHERE ordem LIKE 'carnívoros')
-Select nome_funcionario from funcionarios
-join consultas 
-on consultas.nif_vet= funcionarios.nif
-join carnivoros
-on carnivoros.registo=consultas.registo
-where consultas.diagnostico like 'grávida'
+SELECT nome_func FROM funcionario
+JOIN consultas on consultas.nif = funcionario.nif
+join classe_bio on consultas.registo = classe_bio.registo
+WHERE ordem LIKE 'carnívoros'
+AND
+diagnostico LIKE 'grávida'
 ```   
 |nome_funcionario|
 |----------------|
-|Pedro Vale|  
+|Pedro Vale      |  
 
 >**h.**  Indique  para  cada  família  da  ordem  artiodáctilos  quantos  animais tem o zoo.  
 ``` SQL
 SELECT familia, COUNT(ordem) AS numAnimais
-FROM class_biologica
+FROM classe_bio
 WHERE ordem LIKE 'artiodáctilos'
 GROUP BY familia;
 ```  
@@ -129,11 +127,11 @@ LIMIT 1;
 
 >**k.**  Qual é  a  ordem  dos  animais  que  têm  mais  de  5  consultas  por  ano(diagnóstico ou tratamento).  
 ``` SQL
-SELECT ordem,COUNT(consultas) 
-FROM class_biologica
-NATURAL INNER JOIN consultas
-GROUP BY ordem
-HAVING COUNT(consultas) > 5;
+SELECT ordem, count(ordem) from classe_bio
+natural INNER join consultas
+where classe_bio.registo = consultas.registo
+group by ordem 
+HAVING COUNT(ordem)>5;
 ```  
 |oredem   |count|
 |---------|-----|
@@ -142,18 +140,19 @@ HAVING COUNT(consultas) > 5;
 
 >**l.**  Indique o número de animais nascidos em cativeiro.  
 ``` SQL
-SELECT COUNT(progenitores) AS nasCativeiro
-FROM progenitores;
+WITH anms as (SELECT registo, count(registo) as cat from cativeiro
+group by registo)
+select SUM(cat) from anms
 ```  
-|nascativeiro|  
-|-|
-|10|
+|SUM|  
+|---|
+|10 |
 >**m.**  Qual é o animal (nome e espécie) mais velho do zoo?  
 ``` SQL
 WITH A AS (SELECT data_nascimento AS dn , registo
-FROM progenitores
+FROM cativeiro
 UNION
-SELECT idade_estimada AS dn , registo
+SELECT idd_estimada AS dn , registo
 FROM captura)
 
 SELECT nome FROM animais
@@ -169,18 +168,18 @@ FROM a))
 
 >**n.**  Qual é o local húmido com mais mamíferos?  
 ``` SQL
-with mamiferos AS(SELECT registo FROM animais
-NATURAL INNER JOIN class_biologica
+WITH mamiferos AS(SELECT registo FROM animais
+NATURAL INNER JOIN classe_bio
 WHERE classe LIKE 'mamíferos'),
  mamiferosperplace AS(SELECT registo_local, COUNT(animais)AS num
-FROM "espaços" JOIN animais
-ON "espaços".registo_local=animais.local
+FROM espacos JOIN animais
+ON espacos.registo_local=animais.local
 JOIN mamiferos
 ON animais.registo=mamiferos.registo
-WHERE "espaços".humidade LIKE 'húmido'
+WHERE espacos.clima LIKE '%húmido%'
 group by registo_local)
 
-SELECT registo_local FROM "espaços"
+SELECT registo_local FROM espacos
 WHERE registo_local=
 (SELECT registo_local
 FROM mamiferosperplace
@@ -192,16 +191,16 @@ FROM mamiferosperplace))
 |A3           |
 >**o.**  Para  cada  tratador  indique  o  número  de  mamíferos  por  que  é  responsável?  
 ``` SQL
-with mamiferos AS(SELECT registo FROM animais
-NATURAL INNER JOIN class_biologica
+WITH mamiferos AS(SELECT registo FROM animais
+NATURAL INNER JOIN classe_bio
 WHERE classe LIKE 'mamíferos'),
-mamiferospertratador AS (SELECT nif_tratador,registo 
-FROM tratadores NATURAL inner join mamiferos)
-SELECT nome_funcionario, COUNT(mamiferospertratador.nif_tratador)
+mamiferospertratador AS (SELECT nif,registo 
+FROM tratador NATURAL inner join mamiferos)
+SELECT nome_func, COUNT(mamiferospertratador.nif)
 AS mamifpertrat
-FROM funcionarios JOIN mamiferospertratador
-ON funcionarios.nif=mamiferospertratador.nif_tratador
-GROUP BY nome_funcionario
+FROM funcionario JOIN mamiferospertratador
+ON funcionario.nif=mamiferospertratador.nif
+GROUP BY nome_func
 ```  
 |nome_funcionario|mamifpertrat|
 |----------------|------------|
@@ -210,14 +209,14 @@ GROUP BY nome_funcionario
 
 >**p.**  Indique o nome dos animais que já foram tratados por todos os veterinários?  
 ``` SQL
-with veterinarios as (select nif from funcionarios
-where funçao like 'Veterinário'),
-constPedroVale as (Select registo from consultas
-join funcionarios on nif_vet=nif
-where nome_funcionario like 'Pedro Vale' ),
+WITH constPedroVale as (Select registo from consultas
+NATURAL INNER JOIN veterinarios
+NATURAL INNER JOIN funcionario
+WHERE funcionario.nome_func LIKE 'Pedro Vale'),
 constIsabelSoares  as (Select registo from consultas
-join funcionarios on nif_vet=nif
-where nome_funcionario like 'Isabel Soares' )
+NATURAL INNER JOIN veterinarios
+NATURAL INNER JOIN funcionario
+WHERE funcionario.nome_func LIKE 'Isabel Soares' )
 select DISTINCT nome from animais 
 Natural inner join constPedroVale
 NATURAL inner join constIsabelSoares
