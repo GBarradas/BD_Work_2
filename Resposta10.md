@@ -47,11 +47,9 @@ WHERE nome = 'Kilu'
 
 >**d.**  Indique os telefones do tratador responsável pela Kata.  
 ``` SQL
-SELECT telemovel,telefone FROM funcionarios 
-JOIN  tratadores 
-ON funcionarios.nif=tratadores.nif_tratador
-JOIN animais
-ON animais.registo=tratadores.registo
+SELECT numero FROM telefones
+Natural inner JOIN  tratador
+Natural INNER JOIN animais
 WHERE animais.nome LIKE 'Kata';
 ```  
 |numero   |
