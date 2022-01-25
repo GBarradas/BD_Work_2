@@ -110,6 +110,25 @@ GROUP BY familia;
 |hipopótamos|3|
 >**i.**  Indique para cada espécie quais os pares de animais que podem ser acasalados,  sabendo  que  não  se  devem  acasalar  pais  com  filhos  ou irmãos.  
 ``` SQL
+with fem(femName,registo,especie) as(select animais.nome,animais.registo, especie from animais
+Natural inner join classe_bio
+where sexo like 'feminino'
+order by especie),
+mas(masName, registo,especie) as(select animais.nome, registo, especie from animais
+Natural inner join classe_bio
+where sexo like 'masculino'
+order by especie)
+select femName , masname, fem.especie from fem
+join mas on fem.especie=mas.especie 
+EXCEPT
+select fem.femName , animais.nome, fem.especie  from fem 
+join cativeiro on fem.registo = cativeiro.registo
+Join animais on cativeiro.registo_pai= animais.registo
+EXCEPT
+select animais.nome, mas.masName , mas.especie from mas 
+join cativeiro on mas.registo = cativeiro.registo
+Join animais on cativeiro.registo_mae= animais.registo
+
 ```
 >**j.**  Qual é a ordem com mais animais no zoo?  
 ``` SQL
