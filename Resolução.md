@@ -2,10 +2,10 @@
 <input type="checkbox" checked>  01
 <input type="checkbox" checked>  02
 <input type="checkbox" checked>  03
-<input type="checkbox" >  04
-<input type="checkbox" >  05
-<input type="checkbox" >  06
-<input type="checkbox" >  07
+<input type="checkbox" checked>  04
+<input type="checkbox" checke>  05
+<input type="checkbox" checke>  06
+<input type="checkbox" checke>  07
 <input type="checkbox" checked>  08
 <input type="checkbox" checked>  09
 <input type="checkbox" checked>  10  
@@ -22,7 +22,7 @@
 - **animais**(*registo*, nome, sexo, local)
 - **classe_bio**(*especie*, classe, ordem, familia, registo)
 - **captura**(*registo*, local_captura, data_captura, idade_estimada)
-- **cativeiro**(*registo*, registo_mae, registo_pai)
+- **cativeiro**(*registo*, registo_mae, registo_pai,data_nascimento)
 - **espacos**(*registo_local*, area, meio, clima)
 - **funcionario**(nome_func, inicio_func, *nif*)
 - **telf_funcionario**(*nif, telemovel*)
@@ -54,6 +54,16 @@
 
 
 > **4.** Apresente a Base de Dados na forma normal de Boyce Codd, BCNF.
+> 
+- registo→ nome, sexo, local
+- registo, especie→classe, ordem, familia
+- registo→ local-captura,data_captura,idade_estimada
+- registo→ registo_mae,registo_pai,data_nascimento
+- registo_local→ area, meio, clima
+- nif→ nome_func, inicio_func
+- nif_funcionario→ nif_responsavel
+- animal→ nif
+- registo, data_consulta→ nif, registo_local, diagonostico
 
 >**5.**  Indique justificando se a sua base de dados tem informação redundante.
 

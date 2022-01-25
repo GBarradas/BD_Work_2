@@ -110,26 +110,66 @@ GROUP BY familia;
 |hipopótamos|3|
 >**i.**  Indique para cada espécie quais os pares de animais que podem ser acasalados,  sabendo  que  não  se  devem  acasalar  pais  com  filhos  ou irmãos.  
 ``` SQL
-with fem(femName,registo,especie) as(select animais.nome,animais.registo, especie from animais
-Natural inner join classe_bio
-where sexo like 'feminino'
-order by especie),
-mas(masName, registo,especie) as(select animais.nome, registo, especie from animais
-Natural inner join classe_bio
-where sexo like 'masculino'
-order by especie)
-select femName , masname, fem.especie from fem
-join mas on fem.especie=mas.especie 
+WITH fem(femName,registo,especie) AS (SELECT animais.nome,animais.registo, especie FROM animais
+NATURAL INNER JOIN classe_bio
+WHERE sexo LIKE 'feminino'
+ORDER BY especie),
+mas(masName, registo,especie) AS (SELECT animais.nome, registo, especie FROM animais
+NATURAL INNER JOIN classe_bio
+WHERE sexo LIKE 'masculino'
+ORDER BY especie),
+catfem(nome, registo, registo_mae, registo_pai,especie) AS 
+(SELECT animais.nome , animais.registo,registo_mae, registo_pai,classe_bio.especie 
+FROM cativeiro  NATURAL INNER JOIN animais
+NATURAL INNER JOIN classe_bio
+Where sexo like 'feminino'),
+catmas(nome, registo, registo_mae, registo_pai,especie) AS 
+(SELECT animais.nome , animais.registo,registo_mae, registo_pai,classe_bio.especie 
+FROM cativeiro  NATURAL INNER JOIN animais
+NATURAL INNER JOIN classe_bio
+Where sexo like 'masculino')
+SELECT femName , masname, fem.especie FROM fem
+JOIN mas ON fem.especie=mas.especie 
 EXCEPT
-select fem.femName , animais.nome, fem.especie  from fem 
-join cativeiro on fem.registo = cativeiro.registo
-Join animais on cativeiro.registo_pai= animais.registo
+SELECT fem.femName , animais.nome, fem.especie  FROM fem 
+JOIN cativeiro ON fem.registo = cativeiro.registo
+JOIN animais ON cativeiro.registo_pai= animais.registo
 EXCEPT
-select animais.nome, mas.masName , mas.especie from mas 
-join cativeiro on mas.registo = cativeiro.registo
-Join animais on cativeiro.registo_mae= animais.registo
+SELECT animais.nome, mas.masName , mas.especie FROM mas 
+JOIN cativeiro ON mas.registo = cativeiro.registo
+JOIN animais ON cativeiro.registo_mae= animais.registo
+EXCEPT
+SELECT animais.nome,catmas.nome , catmas.especie from catmas 
+JOIN cativeiro on catmas.registo_mae=cativeiro.registo_mae
+JOIN animais on cativeiro.registo=animais.registo
+EXCEPT
+SELECT animais.nome, catmas.nome ,catmas.especie from catmas
+JOIN cativeiro on catmas.registo_pai=cativeiro.registo_pai
+JOIN animais on cativeiro.registo=animais.registo
 
-```
+
+
+
+```  
+|Feminino|Masculino|especie           |
+|--------|---------|----------------- |
+|Zula	   |Zará	   |arara-azul-pequena|
+|Rará	   |Zará	   |arara-azul-pequena|
+|Zura	   |Zará	   |arara-azul-pequena|
+|Rará	   |Ará	     |arara-azul-pequena|
+|Tapi	   |Hipo	   |hipopótamo comum  |
+|Luka	   |Kaki	   |veado             |
+|Kalu	   |Kaki	   |veado             |
+|Kalu	   |Kuli	   |veado             |
+|Mali	   |Mata	   |tigre             |
+|Mali	   |Cáta	   |tigre             |
+|Aka	   |Cáta	   |tigre             |
+|Kata	   |Cáta	   |tigre             |
+|Kata	   |Taji	   |tigre             |
+|Mali	   |Taji	   |tigre             |
+
+
+
 >**j.**  Qual é a ordem com mais animais no zoo?  
 ``` SQL
 SELECT ordem, COUNT(ordem) AS num
