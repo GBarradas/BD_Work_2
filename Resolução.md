@@ -3,9 +3,9 @@
 <input type="checkbox" checked>  02
 <input type="checkbox" checked>  03
 <input type="checkbox" checked>  04
-<input type="checkbox" checke>  05
-<input type="checkbox" checke>  06
-<input type="checkbox" checke>  07
+<input type="checkbox" checked>  05
+<input type="checkbox" checked>  06
+<input type="checkbox" checked>  07
 <input type="checkbox" checked>  08
 <input type="checkbox" checked>  09
 <input type="checkbox" checked>  10  
@@ -15,7 +15,7 @@
 >**1.**  Para o problema acima, construa um diagrama Entidade-Relação que descreva a informação.  No diagrama não se esqueça de indicar as restrições das relações e as chaves primárias das entidades.  
 
 [<img src="fotos/DiagramaE-R.drawio.png">](fotos/DiagramaE-R.drawio.png)
-
+  
 
 
 >**2.**  Transforme  o  modelo  E-R  em  tabelas.   Nas  tabelas  não  se  esqueça  deindicar as chaves primárias e as chaves candidatas.  
