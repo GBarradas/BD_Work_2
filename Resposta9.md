@@ -1,6 +1,7 @@
 # Resolução da Pergunta 9
 ## [Pagina Principal](Resolução.md)
 > **9.**  Indique as express ̃oes em SQL para inserir a seguinte informação na suabase de dados e inseria-a.  
+  
 ``` SQL
 --Inserção dos animais::
 --Tigres::
