@@ -1,4 +1,5 @@
-- **animais**(*registo*, nome, sexo, local)
+- **animais**(*registo*, nome, sexo, local)  
+
 ``` SQL
 CREATE TABLE animais (
 
@@ -13,8 +14,10 @@ CREATE TABLE animais (
   local VARCHAR(3)
 
 );
-```
-- **classe_bio**(*especie*, classe, ordem, familia, registo)
+```  
+
+- **classe_bio**(*especie*, classe, ordem, familia, registo)  
+
 ``` SQL
 CREATE TABLE classe_bio(
 
@@ -33,8 +36,10 @@ CREATE TABLE classe_bio(
   FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT 
 
 );
-```
-- **captura**(*registo*, local_captura, data_captura, idade_estimada)
+```  
+
+- **captura**(*registo*, local_captura, data_captura, idade_estimada)  
+
 ``` SQL
 CREATE TABLE captura(
 
@@ -50,8 +55,10 @@ CREATE TABLE captura(
 
 );
 
-```
-- **cativeiro**(*registo*, registo_mae, registo_pai)
+```  
+
+- **cativeiro**(*registo*, registo_mae, registo_pai)  
+
 ``` SQL
 CREATE TABLE cativeiro(
 
@@ -70,8 +77,10 @@ CREATE TABLE cativeiro(
   FOREIGN KEY (registo_pai)REFERENCES animais ON DELETE RESTRICT 
 
 );
-```
-- **espacos**(*registo_local*, area, meio, clima)
+```  
+
+- **espacos**(*registo_local*, area, meio, clima)  
+
 ``` SQL
 CREATE TABLE espacos(
 
@@ -86,8 +95,10 @@ CREATE TABLE espacos(
   --FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
 
 );
-```
-- **funcionario**(nome_func, inicio_func, *nif*)
+```  
+
+- **funcionario**(nome_func, inicio_func, *nif*)  
+
 ``` SQL
 CREATE TABLE funcionario (
 
@@ -98,8 +109,10 @@ CREATE TABLE funcionario (
   nif DECIMAL PRIMARY KEY
 
 );
-```
-- **telf_funcionario**(*nif, telemovel*)
+```  
+
+- **telf_funcionario**(*nif, telemovel*)  
+
 ``` SQL
 CREATE TABLE telefones (
 
@@ -112,8 +125,10 @@ CREATE TABLE telefones (
   FOREIGN KEY (nif) REFERENCES funcionario ON DELETE RESTRICT
 
 );
-```
-- **responsavel**(nif_responsvel, *nif_funcionario*)
+```  
+
+- **responsavel**(nif_responsvel, *nif_funcionario*)  
+
 ``` SQL
 CREATE TABLE responsavel(
 
@@ -126,8 +141,10 @@ CREATE TABLE responsavel(
   	FOREIGN KEY (nif_funcionario) REFERENCES funcionario ON DELETE RESTRICT
 
 );
-```
-- **tratador**(nif, animal)
+```  
+
+- **tratador**(nif, animal)  
+
 ``` SQL
 CREATE TABLE tratador (
 
@@ -140,8 +157,10 @@ CREATE TABLE tratador (
   FOREIGN KEY (registo) REFERENCES animais ON DELETE RESTRICT
 
 );
-```
-- **tratador_auxiliar**(nif, registo_local)
+```  
+
+- **tratador_auxiliar**(nif, registo_local)  
+
 ``` SQL
 CREATE TABLE tratador_auxiliar (
 
@@ -154,8 +173,10 @@ CREATE TABLE tratador_auxiliar (
   FOREIGN KEY (registo_local) REFERENCES espacos ON DELETE RESTRICT
 
 );
-```
-- **veterinarios**(*nif*)
+```  
+
+- **veterinarios**(*nif*)  
+
 ``` SQL
 CREATE TABLE veterinarios(
 
@@ -164,8 +185,10 @@ CREATE TABLE veterinarios(
   FOREIGN KEY(nif) REFERENCES funcionario ON DELETE RESTRICT
 
 );
-```
-- **consultas**(nif, registo, registo_local, data_consulta, diagonostico)
+```  
+
+- **consultas**(nif, registo, registo_local, data_consulta, diagonostico)  
+
 ``` SQL
 CREATE TABLE consultas (
 
