@@ -4,28 +4,34 @@
 
 >**10.**  Indique a expressão em SQL para responder às seguintes perguntas (no relatório indique também o resultado;  
 >
->**a.**  Em que locais do zoo se podem visitar aves? 
+>**a.**  Em que locais do zoo se podem visitar aves?   
+
 ``` SQL
 SELECT DISTINCT local from animais
 natural INNER JOIN classe_bio
 WHERE classe LIKE 'aves'
-```  
+```   
+
 |registo_local|
 |-------------|
 |A6|  
 
 >**b.**  Em que locais do zoo não há carnívoros?  
+
 ``` SQL
 SELECT DISTINCT local from animais
 natural INNER JOIN classe_bio
 WHERE ordem not like 'carnívoros'
-```  
+```   
+
 |registo_local|
 |-------------|
 |A6|
 |A2|
-|A1|
->**c.**  Indique os irmãos da Kilu.  
+|A1|  
+
+>**c.**  Indique os irmãos da Kilu.    
+
 ``` SQL
 SELECT nome from animais
 natural INNER JOIN cativeiro
@@ -40,24 +46,28 @@ WHERE registo_pai = (
 EXCEPT
 SELECT nome FROM animais
 WHERE nome = 'Kilu'
-```  
+```   
+
 |nome|
 |----|
 |Kuli|  
 
->**d.**  Indique os telefones do tratador responsável pela Kata.  
+>**d.**  Indique os telefones do tratador responsável pela Kata.    
+
 ``` SQL
 SELECT numero FROM telefones
 Natural inner JOIN  tratador
 Natural INNER JOIN animais
 WHERE animais.nome LIKE 'Kata';
 ```  
+
 |numero   |
 |---------|
 |266787809|  
 |919999999|
 
->**e.**  Indique  os  telefones  do  responsável  pelo  auxiliar  responsável  pela local onde está a Kata.  
+>**e.**  Indique  os  telefones  do  responsável  pelo  auxiliar  responsável  pela local onde está a Kata.    
+
 ``` SQL
 WITH aux as (select nif from tratador_auxiliar
 NATURAL INNER JOIN animais
@@ -67,24 +77,30 @@ natural inner JOIN aux
 Natural INNER JOIN responsavel
 where responsavel.nif_funcionario = aux.nif
 ```  
+
 |numero   |
 |---------|
 |919999996|
-|266878806|
+|266878806|  
+
 >**f.**  Indique os tratamentos (data e tratamento) que a Mali já fez no zoo.  
+  
 ``` SQL
 SELECT data_consulta,diagnostico FROM consultas
 NATURAL INNER JOIN animais 
  WHERE nome LIKE 'Mali';
 ```  
+
 |data_consulta|diagnostico|
 |-------------|-----------|
 |2005-08-12   |grávida    |
 |2005-09-12|cálcio injectado|
 |2005-12-12   |parto      |
-|2006-07-12   |infecção   |
-|2006-07-12   |antibiótico injectado|
->**g.**  Indique os nomes dos veterinários que já diagnosticaram uma gravidez a um carnívoro.  
+|2006-07-12   |infecção   | 
+|2006-07-12   |antibiótico injectado|  
+
+>**g.**  Indique os nomes dos veterinários que já diagnosticaram uma gravidez a um carnívoro.    
+
 ``` SQL
 SELECT nome_func FROM funcionario
 JOIN consultas on consultas.nif = funcionario.nif
@@ -93,22 +109,27 @@ WHERE ordem LIKE 'carnívoros'
 AND
 diagnostico LIKE 'grávida'
 ```   
+
 |nome_funcionario|
 |----------------|
 |Pedro Vale      |  
 
->**h.**  Indique  para  cada  família  da  ordem  artiodáctilos  quantos  animais tem o zoo.  
+>**h.**  Indique  para  cada  família  da  ordem  artiodáctilos  quantos  animais tem o zoo.    
+
 ``` SQL
 SELECT familia, COUNT(ordem) AS numAnimais
 FROM classe_bio
 WHERE ordem LIKE 'artiodáctilos'
 GROUP BY familia;
 ```  
+
 |familia|numAnimais|
 |-------|----------|
 |cervídeos|5|
-|hipopótamos|3|
->**i.**  Indique para cada espécie quais os pares de animais que podem ser acasalados,  sabendo  que  não  se  devem  acasalar  pais  com  filhos  ou irmãos.  
+|hipopótamos|3|  
+
+>**i.**  Indique para cada espécie quais os pares de animais que podem ser acasalados,  sabendo  que  não  se  devem  acasalar  pais  com  filhos  ou irmãos.    
+
 ``` SQL
 WITH fem(femName,registo,especie) AS (SELECT animais.nome,animais.registo, especie FROM animais
 NATURAL INNER JOIN classe_bio
@@ -150,7 +171,8 @@ JOIN animais on cativeiro.registo=animais.registo
 
 
 
-```  
+```    
+
 |Feminino|Masculino|especie           |
 |--------|---------|----------------- |
 |Zula	   |Zará	   |arara-azul-pequena|
@@ -170,19 +192,22 @@ JOIN animais on cativeiro.registo=animais.registo
 
 
 
->**j.**  Qual é a ordem com mais animais no zoo?  
+>**j.**  Qual é a ordem com mais animais no zoo?    
+
 ``` SQL
 SELECT ordem, COUNT(ordem) AS num
 FROM class_biologica
 GROUP by ordem
 Order by num DESC
 LIMIT 1;
-```
+```  
+
 |ordem|num|
 |------|---|
 |artiodáctilos|8|  
 
->**k.**  Qual é  a  ordem  dos  animais  que  têm  mais  de  5  consultas  por  ano(diagnóstico ou tratamento).  
+>**k.**  Qual é  a  ordem  dos  animais  que  têm  mais  de  5  consultas  por  ano(diagnóstico ou tratamento).    
+
 ``` SQL
 SELECT ordem, count(ordem) from classe_bio
 natural INNER join consultas
@@ -190,21 +215,26 @@ where classe_bio.registo = consultas.registo
 group by ordem 
 HAVING COUNT(ordem)>5;
 ```  
+
 |oredem   |count|
 |---------|-----|
 |artiodáctilos|12|
 |psittaciformes|6|  
 
->**l.**  Indique o número de animais nascidos em cativeiro.  
+>**l.**  Indique o número de animais nascidos em cativeiro.    
+
 ``` SQL
 WITH anms as (SELECT registo, count(registo) as cat from cativeiro
 group by registo)
 select SUM(cat) from anms
 ```  
+
 |SUM|  
 |---|
-|10 |
->**m.**  Qual é o animal (nome e espécie) mais velho do zoo?  
+|10 |  
+
+>**m.**  Qual é o animal (nome e espécie) mais velho do zoo?    
+
 ``` SQL
 WITH A AS (SELECT data_nascimento AS dn , registo
 FROM cativeiro
@@ -219,11 +249,13 @@ FROM a
 WHERE dn=(SELECT MIN(dn)
 FROM a))
 ```  
+
 |maisVelho|
 |---------|
 |Hipo     |  
 
->**n.**  Qual é o local húmido com mais mamíferos?  
+>**n.**  Qual é o local húmido com mais mamíferos?    
+
 ``` SQL
 WITH mamiferos AS(SELECT registo FROM animais
 NATURAL INNER JOIN classe_bio
@@ -242,11 +274,14 @@ WHERE registo_local=
 FROM mamiferosperplace
 WHERE num=(SELECT MAX(num)
 FROM mamiferosperplace))
-```  
+```    
+
 |registo_local|
 |-------------|
-|A3           |
->**o.**  Para  cada  tratador  indique  o  número  de  mamíferos  por  que  é  responsável?  
+|A3           |  
+
+>**o.**  Para  cada  tratador  indique  o  número  de  mamíferos  por  que  é  responsável?    
+
 ``` SQL
 WITH mamiferos AS(SELECT registo FROM animais
 NATURAL INNER JOIN classe_bio
@@ -258,13 +293,15 @@ AS mamifpertrat
 FROM funcionario JOIN mamiferospertratador
 ON funcionario.nif=mamiferospertratador.nif
 GROUP BY nome_func
-```  
+```    
+
 |nome_funcionario|mamifpertrat|
 |----------------|------------|
 |Manuel Santos   |8           |
 |Joaquim Silva   |7           |
 
->**p.**  Indique o nome dos animais que já foram tratados por todos os veterinários?  
+>**p.**  Indique o nome dos animais que já foram tratados por todos os veterinários?    
+
 ``` SQL
 WITH constPedroVale as (Select registo from consultas
 NATURAL INNER JOIN veterinarios
@@ -277,8 +314,10 @@ WHERE funcionario.nome_func LIKE 'Isabel Soares' )
 select DISTINCT nome from animais 
 Natural inner join constPedroVale
 NATURAL inner join constIsabelSoares
-```  
+```    
+
 |nome|
 |----|
 |Tapi|
-|Zula|
+|Zula|  
+
